@@ -240,7 +240,7 @@ export default function ListToolbar({
         </div>
 
         {onSubmit || onClear ? (
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+          <div className="flex flex-row gap-2 sm:flex-row sm:items-center sm:justify-end">
             {onClear ? (
               <Button type="button" variant="outline" onClick={onClear}>
                 Limpiar
