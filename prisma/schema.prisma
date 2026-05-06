@@ -1,0 +1,922 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                     String           @id @default(cuid())
+  email                  String           @unique
+  name                   String
+  passwordHash           String?
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  roleId                 String
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+  clientsCreated         Client[]
+  productsCreated        Product[]
+  projects               Project[]
+  quotationsCreated      Quotation[]
+  reviewTemplatesCreated ReviewTemplate[]
+  role                   Role             @relation(fields: [roleId], references: [id])
+  projectNotes           ProjectNote[]
+  projectNoteLikes       ProjectNoteLike[]
+  projectNoteReplies     ProjectNoteReply[]
+  projectEventsCreated   ProjectEvent[]
+  projectAlertsCreated   ProjectAlert[]
+  reportedWarrantyCases ProjectWarrantyCase[] @relation("WarrantyReportedByUser")
+  fabricationsCreated ProjectFabrication[] @relation("ProjectFabricationCreatedBy")
+  fabricationsUpdated ProjectFabrication[] @relation("ProjectFabricationUpdatedBy")
+  financeEntriesCreated ProjectFinanceEntry[]
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  permissions RolePermission[]
+  users       User[]
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  key         String           @unique
+  description String?
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model Client {
+  id             String      @id @default(cuid())
+  name           String
+  documentType   String
+  documentNumber String
+  email          String?
+  address        String?
+  city           String?
+  department     String?
+  contactName1   String?
+  contactRole1   String?
+  contactPhone1  String?
+  contactName2   String?
+  contactRole2   String?
+  contactPhone2  String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  phone          String?
+  createdById    String
+  createdBy      User        @relation(fields: [createdById], references: [id])
+  quotations     Quotation[]
+
+  @@index([name])
+  @@index([documentNumber])
+  @@index([createdById])
+}
+
+model Product {
+  id             String          @id @default(cuid())
+  name           String
+  code           String          @unique
+  unitPrice      Decimal         @db.Decimal(12, 2)
+  imageUrl       String?
+  description    String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  createdById    String
+  createdBy      User            @relation(fields: [createdById], references: [id])
+  quotationItems QuotationItem[]
+
+  @@index([name])
+  @@index([code])
+  @@index([createdById])
+}
+
+model ReviewTemplate {
+  id          String      @id @default(cuid())
+  title       String
+  details     String?
+  isActive    Boolean     @default(true)
+  createdById String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  quotations  Quotation[]
+  createdBy   User        @relation(fields: [createdById], references: [id])
+
+  @@index([createdById, isActive])
+}
+
+model Quotation {
+  id                     String          @id @default(cuid())
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+  numberQuotation        String          @unique
+  date                   DateTime        @default(now())
+  validDays              Int             @default(30)
+  createdById            String
+  clientId               String?
+  clientSnapshot         Json
+  projectReference       String
+  projectReferenceDetail String?
+  projectPresentation    String
+  specialConditions      String?
+  timeDelivery           String?
+  workLocation           String?
+  guarantees             String?
+  commercialCondition    String?
+  paymentMethod          String?
+  reviewTemplateId       String?
+  reviewTitle            String?
+  reviewDetails          String?
+  totalGeneral           Decimal         @db.Decimal(18, 2)
+  approvedAt             DateTime?
+  cancelledAt            DateTime?
+  contractId             String?         @unique
+  expiredAt              DateTime?
+  projectId              String?         @unique
+  rejectedAt             DateTime?
+  sentAt                 DateTime?
+  status                 QuotationStatus @default(DRAFT)
+  installationSystem     String?
+  note                   String?
+  project                Project?
+  client                 Client?         @relation(fields: [clientId], references: [id])
+  createdBy              User            @relation(fields: [createdById], references: [id])
+  reviewTemplate         ReviewTemplate? @relation(fields: [reviewTemplateId], references: [id])
+  items                  QuotationItem[]
+  terms                  QuotationTerm[]
+  subTotalWithoutIva     Decimal         @default(0) @db.Decimal(18, 2)
+  ivaTotal               Decimal         @default(0) @db.Decimal(18, 2)
+  totalWithIva           Decimal         @default(0) @db.Decimal(18, 2)
+
+  @@index([createdById, createdAt])
+  @@index([clientId, createdAt])
+  @@index([reviewTemplateId])
+  @@index([numberQuotation])
+  @@index([status, createdAt])
+}
+
+model QuotationItem {
+  id                  String    @id @default(cuid())
+  createdAt           DateTime  @default(now())
+  quotationId         String
+  productId           String?
+  code                String
+  description         String
+  unit                String
+  quantity            Decimal   @db.Decimal(18, 2)
+  unitPrice           Decimal   @db.Decimal(18, 2)
+  adminPercent        Decimal   @db.Decimal(5, 2)
+  utilPercent         Decimal   @db.Decimal(5, 2)
+  imprPercent         Decimal   @db.Decimal(5, 2)
+  ivaPercent          Decimal   @db.Decimal(5, 2)
+  productName         String?
+  product             Product?  @relation(fields: [productId], references: [id])
+  quotation           Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  unitPriceWithoutIva Decimal   @default(0) @db.Decimal(18, 2)
+  subTotalWithoutIva  Decimal   @default(0) @db.Decimal(18, 2)
+  ivaAmount           Decimal   @default(0) @db.Decimal(18, 2)
+  totalWithIva        Decimal   @default(0) @db.Decimal(18, 2)
+
+  @@index([quotationId])
+  @@index([productId])
+}
+
+model QuotationTerm {
+  id          String    @id @default(cuid())
+  quotationId String
+  key         String?   @db.VarChar(64)
+  text        String
+  required    Boolean   @default(false)
+  accepted    Boolean   @default(false)
+  order       Int       @default(0)
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+
+  @@index([quotationId])
+}
+
+model QuotationSequence {
+  id         Int      @id @default(1)
+  lastNumber Int      @default(0)
+  updatedAt  DateTime @updatedAt
+}
+
+model QuotationDashboardGoal {
+  id                Int      @id @default(1)
+  monthlySalesGoal  Decimal  @default(50000000) @db.Decimal(18, 2)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  code                    String        @unique
+  quotationId             String        @unique
+  clientSnapshot          Json?
+  totalQuotationSinIVA    Decimal       @db.Decimal(18, 2)
+  spendingLimit65         Decimal       @db.Decimal(18, 2)
+  budgetTotal             Decimal       @default(0) @db.Decimal(18, 2)
+  remaining               Decimal       @default(0) @db.Decimal(18, 2)
+  requiresProductionOrder Boolean       @default(false)
+  kind                    ProjectKind   @default(SUPPLY_ONLY)
+  status                  ProjectStatus @default(ACTIVE)
+  createdById             String?
+
+  responsible String?
+
+   // =========================
+  // WARRANTY SUMMARY
+  // =========================
+
+  warrantyStatus         ProjectWarrantyStatus @default(PENDING)
+  warrantyStartsAt       DateTime?
+  warrantyEndsAt         DateTime?
+  warrantyMonths         Int?
+  warrantyTerms          String?
+  warrantyNotes          String?
+  warrantyCostTotal      Decimal @default(0) @db.Decimal(18, 2)
+  warrantyCasesCount     Int     @default(0)
+  openWarrantyCasesCount Int     @default(0)
+
+  /// =========================
+  /// STAGES: PLAN (DueAt) vs REAL (DoneAt)
+  /// =========================
+
+  // Procurement
+  procurementDueAt  DateTime?
+  procurementDoneAt DateTime?
+
+  // Fabrication
+  fabricationDueAt  DateTime?
+  fabricationDoneAt DateTime?
+
+  // Installation
+  installationDueAt  DateTime?
+  installationDoneAt DateTime?
+
+  // Delivery
+  deliveryDueAt  DateTime?
+  deliveryDoneAt DateTime?
+
+  fabrication   ProjectFabrication?
+  installation  ProjectInstallation?
+
+  createdBy   User?               @relation(fields: [createdById], references: [id])
+  quotation   Quotation           @relation(fields: [quotationId], references: [id])
+  budgetItems ProjectBudgetItem[]
+
+  productionOrders ProductionOrder[]
+
+  latestProductionOrderId String?          @unique
+  latestProductionOrder   ProductionOrder? @relation("ProjectLatestPO", fields: [latestProductionOrderId], references: [id])
+
+  productionOrderCount Int @default(0)
+
+  notes ProjectNote[]
+  documents ProjectDocument[]
+  financeEntries ProjectFinanceEntry[]
+  events ProjectEvent[]
+  alerts ProjectAlert[]
+
+  warrantyCases ProjectWarrantyCase[]
+
+  @@index([warrantyStatus])
+  @@index([warrantyEndsAt])
+  @@index([createdAt])
+  @@index([status])
+  @@index([kind])
+  @@index([procurementDueAt])
+  @@index([fabricationDueAt])
+  @@index([installationDueAt])
+  @@index([deliveryDueAt])
+}
+
+model ProjectSequence {
+  id        String   @id @default(cuid())
+  year      Int      @unique
+  nextValue Int      @default(1)
+  updatedAt DateTime @updatedAt
+}
+
+model Supplier {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String   @unique
+  city        String?
+  contactName String?
+  phone       String?
+
+  invoiceRequired Boolean @default(false)
+
+  requiresProductionOrder Boolean @default(false)
+
+  notes              String?
+  projectBudgetItems ProjectBudgetItem[]
+  warrantyCases ProjectWarrantyCase[]
+  @@index([name])
+  @@index([city])
+}
+
+model ProjectBudgetItem {
+  id                   String    @id @default(cuid())
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  projectId            String
+  description          String
+  quantity             Int?      @default(1)
+  supplierId           String?
+  supplierNameSnapshot String?
+  unitCost             Decimal?  @db.Decimal(18, 2)
+  totalCost            Decimal   @default(0) @db.Decimal(18, 2)
+  notes                String?
+  project              Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  supplier             Supplier? @relation(fields: [supplierId], references: [id])
+
+  procurementStatus ProcurementStatus @default(PENDING)
+  orderedAt         DateTime?
+  receivedAt        DateTime?
+  purchaseNotes     String?
+
+  @@index([projectId, createdAt])
+  @@index([supplierId])
+}
+enum ProcurementStatus {
+  PENDING
+  ORDERED
+  RECEIVED
+  CANCELLED
+}
+enum QuotationStatus {
+  DRAFT
+  SENT
+  APPROVED
+  REJECTED
+  EXPIRED
+  CANCELLED
+}
+
+model ProductionOrder {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  latestForProject Project? @relation("ProjectLatestPO")
+
+  version     Int
+  orderNumber String @unique
+  payload     Json
+
+  @@unique([projectId, version])
+  @@index([projectId, createdAt])
+}
+
+enum ProjectKind {
+  SUPPLY_ONLY
+  EXECUTION
+  MIXED
+}
+
+enum ProjectStatus {
+  ACTIVE
+  PAUSED
+  CLOSED
+  CANCELLED
+}
+
+enum ProjectNoteType {
+  GENERAL
+  PROCUREMENT
+  INSTALLATION
+  PRODUCTION
+  DELIVERY
+  CLIENT
+}
+
+enum ProjectNoteLevel {
+  INFO
+  WARNING
+  ISSUE
+  SUCCESS
+}
+
+model ProjectNote {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+  userId    String?
+
+  content   String   @db.Text
+  type      ProjectNoteType  @default(GENERAL)
+  level     ProjectNoteLevel @default(INFO)
+  pinned    Boolean  @default(false)
+
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  likes     ProjectNoteLike[]
+  replies   ProjectNoteReply[]
+
+  @@index([projectId, createdAt])
+  @@index([projectId, pinned, createdAt])
+  @@index([projectId, type])
+  @@index([projectId, level])
+}
+
+model ProjectNoteLike {
+  noteId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  note ProjectNote @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  user User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([noteId, userId])
+  @@index([userId, createdAt])
+}
+
+model ProjectNoteReply {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  noteId String
+  userId String?
+
+  content String @db.Text
+
+  note ProjectNote @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  user User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([noteId, createdAt])
+  @@index([userId, createdAt])
+}
+
+enum ProjectDocumentType {
+  QUOTATION
+  CLIENT_RUT
+  CLIENT_ID
+  CHAMBER_OF_COMMERCE
+  LEGAL_REP_ID
+  CLIENT_REGISTRATION
+  WORK_CONTRACT
+  PURCHASE_ORDER
+  START_ACT
+  PAYMENT_PROOF
+  POLICY
+  DELIVERY_NOTE
+  DELIVERY_ACT
+  WARRANTY_CERTIFICATE
+  INSTALLATION_PHOTO
+  INSTALLATION_RECORD
+  INSTALLATION_SUPPORT
+  WARRANTY_EVIDENCE
+  WARRANTY_SUPPORT
+  FINANCE_SUPPORT
+}
+
+enum ProjectDocumentSource {
+  GENERATED
+  UPLOADED
+}
+
+enum ProjectDocumentStatus {
+  PENDING
+  AVAILABLE
+  REPLACED
+  VOID
+}
+
+enum StorageProvider {
+  ZOHO_WORKDRIVE
+}
+model ProjectDocument {
+  id               String                @id @default(cuid())
+  projectId        String
+  type             ProjectDocumentType
+  source           ProjectDocumentSource
+  status           ProjectDocumentStatus @default(PENDING)
+
+  title            String
+  description      String?
+  isRequired       Boolean               @default(true)
+
+  storageProvider  StorageProvider?
+  storageFileId    String?
+  storageFolderId  String?
+  storageUrl       String?
+
+  fileName         String?
+  originalFileName String?
+  mimeType         String?
+  fileSize         Int?
+
+  generatedFrom    String?
+  uploadedByUserId String?
+
+  issuedAt         DateTime?
+  expiresAt        DateTime?
+
+  metadata         Json?
+
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  project          Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  financeEntries   ProjectFinanceEntry[]
+
+  @@index([projectId])
+  @@index([projectId, type])
+  @@index([projectId, status])
+}
+
+enum ProjectFinanceEntryType {
+  COLLECTION
+  PAYMENT
+  EXTRA_INCOME
+  EXTRA_EXPENSE
+  ADJUSTMENT_POSITIVE
+  ADJUSTMENT_NEGATIVE
+}
+
+enum ProjectFinanceEntryCategory {
+  ADVANCE
+  CLIENT_PAYMENT
+  SUPPLIER_PAYMENT
+  MATERIAL
+  TRANSPORT
+  LABOR
+  WARRANTY
+  INSTALLATION
+  FABRICATION
+  ADMINISTRATIVE
+  REFUND
+  OTHER
+}
+
+enum ProjectFinanceEntryStatus {
+  ACTIVE
+  VOID
+}
+
+model ProjectFinanceEntry {
+  id          String                    @id @default(cuid())
+  createdAt   DateTime                  @default(now())
+  updatedAt   DateTime                  @updatedAt
+
+  projectId   String
+  type        ProjectFinanceEntryType
+  category    ProjectFinanceEntryCategory
+  status      ProjectFinanceEntryStatus @default(ACTIVE)
+
+  amount      Decimal                   @db.Decimal(18, 2)
+  date        DateTime
+  description String
+  notes       String?
+
+  documentId  String?
+  createdById String?
+
+  project     Project                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  document    ProjectDocument?          @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  createdBy   User?                     @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([projectId, date])
+  @@index([projectId, type])
+  @@index([projectId, category])
+  @@index([projectId, status])
+  @@index([documentId])
+}
+
+enum ProjectWarrantyStatus {
+  NOT_APPLICABLE
+  PENDING
+  ACTIVE
+  EXPIRED
+  VOID
+}
+
+enum WarrantyCaseType {
+  MATERIAL
+  INSTALLATION
+  FINISH
+  ADJUSTMENT
+  VISIT
+  OTHER
+}
+
+enum WarrantyCaseStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+  CANCELLED
+}
+
+enum WarrantyResponsibility {
+  COMPANY
+  SUPPLIER
+  CLIENT
+  MIXED
+  UNDEFINED
+}
+
+model ProjectWarrantyCase {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+
+  type           WarrantyCaseType
+  status         WarrantyCaseStatus     @default(OPEN)
+  responsibility WarrantyResponsibility @default(UNDEFINED)
+
+  title          String
+  description    String?
+
+  reportedAt     DateTime
+  detectedAt     DateTime?
+  startedAt      DateTime?
+  resolvedAt     DateTime?
+
+  estimatedCost  Decimal @default(0) @db.Decimal(18, 2)
+  realCost       Decimal @default(0) @db.Decimal(18, 2)
+
+ 
+  supplierId        String?
+  reportedByUserId  String?
+  resolutionNotes String?
+  internalNotes   String?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  supplier Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  reportedByUser   User?  @relation("WarrantyReportedByUser", fields: [reportedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([projectId, createdAt])
+  @@index([projectId, status])
+  @@index([reportedAt])
+  @@index([resolvedAt])
+}
+
+enum ProjectFabricationStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum FabricationItemStatus {
+  PENDING
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+model ProjectFabrication {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String @unique
+
+  status ProjectFabricationStatus @default(NOT_STARTED)
+
+  title       String?
+  description String?
+
+  plannedStartAt DateTime?
+  plannedEndAt   DateTime?
+  actualStartAt  DateTime?
+  actualEndAt    DateTime?
+
+  progressPercent Int @default(0)
+
+  notes String?
+
+  createdById String?
+  updatedById String?
+
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  items ProjectFabricationItem[]
+
+  createdBy User? @relation("ProjectFabricationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User? @relation("ProjectFabricationUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@index([status])
+}
+
+model ProjectFabricationItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  fabricationId String
+
+  name        String
+  description String?
+  unit        String?
+  quantity    Decimal? @db.Decimal(18, 2)
+
+  status FabricationItemStatus @default(PENDING)
+
+  plannedStartAt DateTime?
+  plannedEndAt   DateTime?
+  actualStartAt  DateTime?
+  actualEndAt    DateTime?
+
+  orderIndex Int @default(0)
+  notes      String?
+
+  fabrication ProjectFabrication @relation(fields: [fabricationId], references: [id], onDelete: Cascade)
+
+  @@index([fabricationId])
+  @@index([status])
+  @@index([fabricationId, orderIndex])
+}
+
+enum ProjectInstallationStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum InstallationItemStatus {
+  PENDING
+  IN_PROGRESS
+  BLOCKED
+  COMPLETED
+  CANCELLED
+}
+
+model ProjectInstallation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String @unique
+
+  status ProjectInstallationStatus @default(NOT_STARTED)
+
+  responsible String?
+  summary     String?
+  notes       String?
+
+  plannedStartAt DateTime?
+  plannedEndAt   DateTime?
+  actualStartAt  DateTime?
+  actualEndAt    DateTime?
+
+  progressPercent Int @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  items ProjectInstallationItem[]
+
+  @@index([status])
+}
+
+model ProjectInstallationItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  installationId String
+
+  name        String
+  description String?
+  responsible String?
+
+  status InstallationItemStatus @default(PENDING)
+
+  plannedAt   DateTime?
+  completedAt DateTime?
+
+  orderIndex Int @default(0)
+  notes      String?
+
+  installation ProjectInstallation @relation(fields: [installationId], references: [id], onDelete: Cascade)
+
+  @@index([installationId])
+  @@index([status])
+  @@index([installationId, orderIndex])
+}
+
+enum ProjectModule {
+  SUMMARY
+  BUDGET
+  PURCHASES
+  FABRICATION
+  INSTALLATION
+  FINANCE
+  DOCUMENTS
+  NOTES
+  WARRANTY
+}
+
+enum ProjectEventType {
+  PROJECT_CREATED
+  BUDGET_UPDATED
+  PURCHASE_CREATED
+  PURCHASE_STATUS_CHANGED
+  FABRICATION_UPDATED
+  FABRICATION_ITEM_COMPLETED
+  INSTALLATION_UPDATED
+  INSTALLATION_ITEM_COMPLETED
+  DOCUMENT_UPLOADED
+  WARRANTY_OPENED
+  FINANCE_ENTRY_CREATED
+  NOTE_CREATED
+}
+
+enum ProjectAlertType {
+  BUDGET_LIMIT_WARNING
+  DEADLINE_NEAR
+  DEADLINE_OVERDUE
+  PURCHASE_PENDING
+  FABRICATION_BLOCKED
+  INSTALLATION_BLOCKED
+  WARRANTY_OPEN
+  DOCUMENT_EXPIRED
+  FINANCE_MARGIN_RISK
+}
+
+enum ProjectAlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+enum ProjectAlertStatus {
+  ACTIVE
+  RESOLVED
+  DISMISSED
+}
+
+model ProjectEvent {
+  id          String           @id @default(cuid())
+  projectId    String
+  type         ProjectEventType
+  module       ProjectModule
+  title        String
+  description  String?
+  entityId     String?
+  metadata     Json?
+  createdById  String?
+  createdAt    DateTime         @default(now())
+
+  project      Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy    User?            @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([projectId, createdAt])
+  @@index([projectId, module, createdAt])
+  @@index([projectId, type, createdAt])
+}
+
+model ProjectAlert {
+  id           String              @id @default(cuid())
+  projectId     String
+  type          ProjectAlertType
+  module        ProjectModule
+  severity      ProjectAlertSeverity
+  status        ProjectAlertStatus  @default(ACTIVE)
+  title         String
+  description   String?
+  entityId      String?
+  metadata      Json?
+  createdById   String?
+  createdAt     DateTime            @default(now())
+  resolvedAt    DateTime?
+  dismissedAt   DateTime?
+
+  project       Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy     User?               @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([projectId, createdAt])
+  @@index([projectId, status, createdAt])
+  @@index([projectId, type, status])
+  @@index([projectId, module, status])
+}

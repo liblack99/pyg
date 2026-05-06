@@ -1,0 +1,86 @@
+export const termsAndConditions = [
+  {
+    key: "contrato_legal",
+    text: "La ejecución de la presente cotización está sujeta a un Contrato Legal entre las partes: Contratante y Contratista.",
+    required: true,
+    defaultChecked: true,
+  },
+  {
+    key: "documentos_cliente",
+    text: "El cliente debe enviar RUT de la empresa o persona natural o Cédula de Ciudadanía.",
+    required: true,
+    defaultChecked: true,
+  },
+  {
+    key: "orden_compra",
+    text: "El cliente debe enviar orden de compra y/o servicio y soporte de consignación.",
+    required: true,
+    defaultChecked: true,
+  },
+  {
+    key: "mano_obra",
+    text: "Esta cotización incluye mano de obra calificada y herramientas para su ejecución.",
+    required: true,
+    defaultChecked: true,
+  },
+  {
+    key: "gastos_fuera_ciudad",
+    text: "Fuera de la ciudad de Barranquilla, el cliente asume los gastos de transporte de productos, viáticos y transporte de instalador(es).",
+    required: true,
+    defaultChecked: true,
+  },
+  {
+    key: "preparacion_terreno",
+    text: "El cliente se encargará de la preparación del terreno para las instalaciones.",
+    required: true,
+    defaultChecked: true,
+  },
+  {
+    key: "primer_nivel",
+    text: "Los productos serán colocados en un área que se encuentre en primer nivel y sea de fácil acceso. No incluye desplazamientos verticales.",
+    required: true,
+    defaultChecked: true,
+  },
+  {
+    key: "transporte_obra",
+    text: "Esta cotización incluye transporte de los productos al sitio de la obra.",
+    required: true,
+    defaultChecked: true,
+  },
+  {
+    key: "aceptacion_expresa",
+    text: "Al aceptar la cotización se aceptan de manera expresa el contenkeyo y condiciones de la misma; de igual forma, declaro conocer y entender las especificaciones, recomendaciones de uso y calkeyad de los materiales y/o productos objeto de la presente cotización, ofertados por la empresa.",
+    required: true,
+    defaultChecked: true,
+  },
+  {
+    key: "anchos_grama",
+    text: "Las gramas vienen en anchos con medkeyas de 2 m o 3.70 m, de acuerdo a disponibilkeyad.",
+    required: false,
+    defaultChecked: false,
+  },
+  {
+    key: "sin_cortes",
+    text: "Para los productos que requieran cortes no aplican cambios ni devolución de dinero.",
+    required: false,
+    defaultChecked: false,
+  },
+  {
+    key: "sin_devoluciones",
+    text: "Los productos no tienen cambio, excepto por defectos de fabricación y/o mala instalación (esto cuenta como garantía del producto y/o servicio). No se hacen devoluciones de dinero.",
+    required: false,
+    defaultChecked: false,
+  },
+  {
+    key: "pago_total",
+    text: "Una vez pagado el proyecto en su totalkeyad o dado anticipo, el cliente acepta los términos y condiciones de esta cotización.",
+    required: false,
+    defaultChecked: false,
+  },
+  {
+    key: "confirmar_disponibilkeyad",
+    text: "Antes de realizar la compra, por favor confirmar la disponibilkeyad del producto y/o precio con su asesor comercial. La empresa no se hace responsable de cambios posteriores.",
+    required: false,
+    defaultChecked: false,
+  },
+] as const;

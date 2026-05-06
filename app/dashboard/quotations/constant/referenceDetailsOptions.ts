@@ -1,0 +1,17 @@
+export const detailOptions = [
+  "Mobiliario urbano",
+  "Escenario recreativo",
+  "Escenario deportivo",
+  "Grama paisajista",
+  "Grama Futbol",
+  "Pintura de canchas",
+  "Estructuras metálicas",
+  "Accesorios para parques",
+  "Playground",
+  "Parque de madera",
+  "Parque metálico",
+  "Biosaludables",
+  "Piso Epdm",
+  "Piso Gimnasio",
+  "Shockpad",
+];
