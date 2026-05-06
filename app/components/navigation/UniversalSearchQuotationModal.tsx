@@ -6,11 +6,10 @@ import Modal from "@/app/components/ui/Modal";
 import Button from "@/app/components/ui/Button";
 import LoadingSection from "@/app/components/ui/LoadingSection";
 import ErrorSection from "@/app/components/ui/ErrorSection";
-import {StatusBadge} from "@/app/components/ui/StatusBadge";
+
 import {apiGet} from "@/app/lib/api.client";
-import type {ClientDefaultValues, Quotation} from "@/app/core/quotations/dto";
-import {formatDate} from "@/app/utils/formatDate";
-import {moneyCOP} from "@/app/utils/moneyFormatted";
+import type {Quotation} from "@/app/core/quotations/dto";
+
 import QuotationInvoiceView from "@/app/dashboard/quotations/components/QuotationInvoiceView";
 
 type Props = {
@@ -18,28 +17,6 @@ type Props = {
   quotationId: string | null;
   onClose: () => void;
 };
-
-function DetailCard({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | null | undefined;
-}) {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-        {label}
-      </p>
-      <p className="mt-1 text-sm font-medium text-slate-700">{value || "-"}</p>
-    </div>
-  );
-}
-
-function getClientName(snapshot: Quotation["clientSnapshot"]) {
-  if (!snapshot || typeof snapshot !== "object") return "Sin cliente";
-  return String((snapshot as ClientDefaultValues).name ?? "Sin cliente");
-}
 
 export function UniversalSearchQuotationModal({
   open,
