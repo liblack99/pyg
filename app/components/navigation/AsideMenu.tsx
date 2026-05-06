@@ -1,6 +1,6 @@
 "use client";
 // app/components/aside/AsideMenu.tsx
-import NavLink from "./NavLink";
+
 import {usePathname} from "next/navigation";
 import Image from "next/image";
 import {
@@ -78,7 +78,7 @@ function AsideMenu({mobileOpen = false, onCloseMobile}: AsideMenuProps) {
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 flex h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white transition-transform duration-200 dark:border-slate-800 dark:bg-slate-900 lg:static lg:translate-x-0 ${
+      className={`fixed inset-y-0 left-0 z-40 flex h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white transition-transform duration-200  lg:static lg:translate-x-0 ${
         mobileOpen ? "translate-x-0" : "-translate-x-full"
       }`}
       aria-label="Sidebar">
@@ -96,7 +96,7 @@ function AsideMenu({mobileOpen = false, onCloseMobile}: AsideMenuProps) {
           </span>
         </div>
         <div>
-          <h1 className="text-sm font-bold text-slate-900 dark:text-white leading-none">
+          <h1 className="text-sm font-bold text-slate-900  leading-none">
             Parque y Grama
           </h1>
           <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mt-1">

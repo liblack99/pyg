@@ -47,10 +47,10 @@ export function DataTable<T>({
   const canLoadMore = Boolean(onLoadMore) && hasMore && !isLoadingMore;
 
   return (
-    <div className="overflow-hidden border-b-0 border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-950 px-6">
+    <div className="overflow-hidden border-b-0 border-neutral-200 bg-white shadow-sm ">
       <div className="overflow-auto">
         <table className="w-full text-left ">
-          <thead className="sticky top-0 z-10 bg-neutral-50 text-left dark:bg-neutral-900/60">
+          <thead className="sticky top-0 z-10 bg-neutral-50 text-left ">
             <tr className="bg-slate-50/50">
               {columns.map((c) => (
                 <th
@@ -71,7 +71,7 @@ export function DataTable<T>({
               <tr className="hover:bg-slate-50/30">
                 <td className="px-6 py-4" colSpan={columns.length}>
                   <div className="flex items-center gap-3">
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-300 border-t-transparent dark:border-neutral-700 dark:border-t-transparent" />
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-300 border-t-transparent " />
                     <span>{loadingText}</span>
                   </div>
                 </td>
@@ -79,7 +79,7 @@ export function DataTable<T>({
             ) : showEmpty ? (
               <tr>
                 <td
-                  className="px-4 py-10 text-center text-sm text-neutral-600 dark:text-neutral-300"
+                  className="px-4 py-10 text-center text-sm text-neutral-600"
                   colSpan={columns.length}>
                   {emptyText}
                 </td>
@@ -108,10 +108,8 @@ export function DataTable<T>({
 
       {/* Footer opcional para paginación */}
       {(footerLeft || onLoadMore) && (
-        <div className="flex flex-col gap-3 border-t border-neutral-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between dark:border-neutral-800 dark:bg-neutral-950">
-          <div className="text-xs text-neutral-600 dark:text-neutral-300">
-            {footerLeft}
-          </div>
+        <div className="flex flex-col gap-3 border-t border-neutral-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between ">
+          <div className="dark:text-neutral-300">{footerLeft}</div>
 
           {onLoadMore ? (
             <Button

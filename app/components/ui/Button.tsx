@@ -31,10 +31,10 @@ function Button({
      flex items-center  gap-2 px-4 py-1.5 bg-[#137fec] text-white  text-sm font-bold shadow-sm transition-all
     `,
     secondary: `
-      flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300  text-sm font-bold hover:bg-slate-200 transition-colors
+      flex items-center gap-2 px-3 py-1.5 bg-slate-100  text-sm font-bold hover:bg-slate-200 transition-colors
     `,
     outline: `
-      inline-flex items-center justify-center gap-2 border px-3 py-1.5 text-sm font-bold border-neutral-200 bg-white text-neutral-900 shadow-sm hover:bg-neutral-50 active:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/20 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-900/40 dark:active:bg-neutral-900/60 dark:focus-visible:ring-neutral-100/20 dark:focus-visible:ring-offset-neutral-950"
+      inline-flex items-center justify-center gap-2 border px-3 py-1.5 text-sm font-bold border-neutral-200 bg-white text-neutral-900 shadow-sm hover:bg-neutral-50 active:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/20 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
     `,
     danger: `
       bg-red-600 text-white
@@ -46,7 +46,7 @@ function Button({
       hover:bg-green-600
       focus:ring-2 focus:ring-green-500/40
     `,
-    icono: `flex items-center justify-center p-2 bg-transparent text-slate-600 dark:text-slate-400 
+    icono: `flex items-center justify-center p-2 bg-transparent text-slate-600  
       hover:bg-slate-100 dark:hover:bg-slate-800 transition-all rounded-full`,
   };
 
