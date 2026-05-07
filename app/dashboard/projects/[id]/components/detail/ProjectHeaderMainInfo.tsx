@@ -1,5 +1,6 @@
 import type {ProjectView} from "@/app/core/projects/dto";
 import Button from "@/app/components/ui/Button";
+import ProjectExportReportButton from "./ProjectExportReportButton";
 
 type Props = {
   project: ProjectView;
@@ -29,7 +30,10 @@ export default function ProjectHeaderMainInfo({project, title, onEdit}: Props) {
       </div>
 
       <div className="flex gap-2">
-        <Button variant="outline">Exportar Informe</Button>
+        <ProjectExportReportButton
+          projectId={project.id}
+          projectCode={project.code}
+        />
 
         <Button variant="primary" onClick={onEdit}>
           Editar Proyecto

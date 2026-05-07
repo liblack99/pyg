@@ -92,7 +92,7 @@ export default function ListToolbar({
   return (
     <form
       onSubmit={handleInternalSubmit}
-      className="mb-0 flex flex-col flex-wrap  justify-between bg-white px-6 dark:bg-slate-900 dark:border-slate-800 sm:flex-col md:flex-col lg:flex-row">
+      className="mb-0 flex flex-col flex-wrap  justify-between bg-white px-6 sm:flex-col md:flex-col lg:flex-row">
       <h3 className="font-semibold">{title}</h3>
 
       <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
@@ -113,11 +113,11 @@ export default function ListToolbar({
                 disabled={f.disabled}
                 onChange={(e) => onChange(f.key, e.target.value)}
                 placeholder={f.placeholder}
-                className=" bg-slate-100 pl-10 pr-4 dark:bg-slate-800 dark:text-white shadow-sm"
+                className=" bg-slate-100 pl-10 pr-4  shadow-sm"
               />
 
               {f.helperText ? (
-                <p className="mt-1 text-[11px] text-neutral-500 dark:text-neutral-400">
+                <p className="mt-1 text-[11px] text-neutral-500 ">
                   {f.helperText}
                 </p>
               ) : null}
@@ -173,7 +173,7 @@ export default function ListToolbar({
                     value={v}
                     disabled={f.disabled}
                     onChange={(e) => onChange(f.key, e.target.value)}
-                    className="rounded-lg bg-slate-50 px-3 py-2 text-xs font-medium text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
+                    className="rounded-lg bg-slate-50 px-3 py-2 text-xs font-medium text-slate-600 shadow-sm "
                   />
                 </div>
               );
@@ -213,7 +213,7 @@ export default function ListToolbar({
                     }}
                   />
                   {f.helperText ? (
-                    <p className="mt-1 text-[11px] text-neutral-500 dark:text-neutral-400">
+                    <p className="mt-1 text-[11px] text-neutral-500 ">
                       {f.helperText}
                     </p>
                   ) : null}
