@@ -2,10 +2,10 @@
 
 import React from "react";
 import type {UseFormReturn} from "react-hook-form";
-import {InputForm} from "@/app/components/form/rhf/InputForm";
+import {DateInputForm} from "@/app/components/form/rhf/DateInputForm";
 import {SelectForm} from "@/app/components/form/rhf/SelectForm";
 import Button from "@/app/components/ui/Button";
-import type {ProjectCreateValues} from "@/app/core/projects/schema/project.schema";
+import type {ProjectFormValues} from "@/app/core/projects/schema/project.schema";
 
 const statusOptions = [
   {value: "ACTIVE", label: "Activo"},
@@ -20,7 +20,7 @@ const kindOptions = [
 ];
 
 interface Props {
-  form: UseFormReturn<ProjectCreateValues>;
+  form: UseFormReturn<ProjectFormValues>;
   submit: (e?: React.BaseSyntheticEvent) => Promise<void>;
   mode?: "create" | "update";
 }
@@ -43,7 +43,7 @@ export default function ProjectForm({form, submit, mode = "update"}: Props) {
   return (
     <form onSubmit={submit} className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
-        <SelectForm<ProjectCreateValues>
+        <SelectForm<ProjectFormValues>
           control={control}
           name="status"
           label="Estado del proyecto"
@@ -52,7 +52,7 @@ export default function ProjectForm({form, submit, mode = "update"}: Props) {
           placeholder="Seleccione estado"
         />
 
-        <SelectForm<ProjectCreateValues>
+        <SelectForm<ProjectFormValues>
           control={control}
           name="kind"
           label="Tipo de proyecto"
@@ -63,69 +63,61 @@ export default function ProjectForm({form, submit, mode = "update"}: Props) {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <InputForm
+        <DateInputForm<ProjectFormValues>
           control={control}
           name="procurementDueAt"
           label="Compras (Fecha planificada)"
-          type="date"
           error={errors.procurementDueAt}
         />
-        <InputForm
+        <DateInputForm<ProjectFormValues>
           control={control}
           name="procurementDoneAt"
           label="Compras (Fecha real)"
-          type="date"
           error={errors.procurementDoneAt}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <InputForm
+        <DateInputForm<ProjectFormValues>
           control={control}
           name="fabricationDueAt"
           label="Fabricación (Fecha planificada)"
-          type="date"
           error={errors.fabricationDueAt}
         />
-        <InputForm
+        <DateInputForm<ProjectFormValues>
           control={control}
           name="fabricationDoneAt"
           label="Fabricación (Fecha real)"
-          type="date"
           error={errors.fabricationDoneAt}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <InputForm
+        <DateInputForm<ProjectFormValues>
           control={control}
           name="installationDueAt"
           label="Instalación (Fecha planificada)"
-          type="date"
           error={errors.installationDueAt}
         />
-        <InputForm
+        <DateInputForm<ProjectFormValues>
           control={control}
           name="installationDoneAt"
           label="Instalación (Fecha real)"
-          type="date"
           error={errors.installationDoneAt}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <InputForm
+        <DateInputForm<ProjectFormValues>
           control={control}
           name="deliveryDueAt"
           label="Entrega (Fecha planificada)"
-          type="date"
           error={errors.deliveryDueAt}
         />
-        <InputForm
+        <DateInputForm<ProjectFormValues>
           control={control}
           name="deliveryDoneAt"
           label="Entrega (Fecha real)"
-          type="date"
           error={errors.deliveryDoneAt}
         />
       </div>

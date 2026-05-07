@@ -9,11 +9,13 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {apiPost, apiPut} from "@/app/lib/api.client";
 import {
   ProjectCreateSchema,
-  type ProjectCreateValues,
+  ProjectFormSchema,
+  type ProjectFormValues,
+  type ProjectUpdateValues,
 } from "@/app/core/projects/schema/project.schema";
 import {useProjectFormStore} from "../store/projectForm.store";
 
-const defaultValues: ProjectCreateValues = {
+const defaultValues: ProjectFormValues = {
   quotationId: "",
   status: undefined,
   kind: undefined,
@@ -33,13 +35,28 @@ const defaultValues: ProjectCreateValues = {
 
 type MutationResponse = {id: string; code: string};
 
+function toUpdateValues(values: ProjectFormValues): ProjectUpdateValues {
+  return {
+    status: values.status,
+    kind: values.kind,
+    procurementDueAt: values.procurementDueAt,
+    procurementDoneAt: values.procurementDoneAt,
+    fabricationDueAt: values.fabricationDueAt,
+    fabricationDoneAt: values.fabricationDoneAt,
+    installationDueAt: values.installationDueAt,
+    installationDoneAt: values.installationDoneAt,
+    deliveryDueAt: values.deliveryDueAt,
+    deliveryDoneAt: values.deliveryDoneAt,
+  };
+}
+
 export function useProjectForm() {
   const router = useRouter();
   const abortRef = useRef<AbortController | null>(null);
   const store = useProjectFormStore();
 
-  const form = useForm<ProjectCreateValues>({
-    resolver: zodResolver(ProjectCreateSchema),
+  const form = useForm<ProjectFormValues>({
+    resolver: zodResolver(ProjectFormSchema),
     defaultValues,
     mode: "onSubmit",
   });
@@ -62,7 +79,7 @@ export function useProjectForm() {
   }, [store, form]);
 
   const onSubmitValues = useCallback(
-    async (values: ProjectCreateValues) => {
+    async (values: ProjectFormValues) => {
       abortRef.current?.abort();
       const ac = new AbortController();
       abortRef.current = ac;
@@ -74,17 +91,19 @@ export function useProjectForm() {
         let result: MutationResponse;
 
         if (store.mode === "create") {
-          result = await apiPost<MutationResponse>("/api/projects", values);
+          const createValues = ProjectCreateSchema.parse(values);
+          result = await apiPost<MutationResponse>(
+            "/api/projects",
+            createValues,
+          );
         } else {
           if (!store.projectId) {
             throw new Error("No hay proyecto seleccionado");
           }
 
-          const {...updateValues} = values;
-
           result = await apiPut<MutationResponse>(
             `/api/projects/${store.projectId}`,
-            updateValues,
+            toUpdateValues(values),
           );
         }
 

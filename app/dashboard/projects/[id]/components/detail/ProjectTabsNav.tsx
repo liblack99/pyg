@@ -19,9 +19,9 @@ export default function ProjectTabsNav({projectId}: {projectId: string}) {
   const pathname = usePathname();
 
   return (
-    <nav className="mb-4 flex border-b border-slate-200">
+    <nav className="mb-4 flex border-b border-slate-200 rounded-sm bg-white">
       <div className="flex w-full overflow-x-auto scrollbar-hide">
-        <div className="flex gap-8 px-1">
+        <div className="flex gap-8 px-1 pl-4">
           {TABS.map((tab) => {
             const href = `/dashboard/projects/${projectId}${
               tab.path ? `/${tab.path}` : ""
@@ -36,9 +36,9 @@ export default function ProjectTabsNav({projectId}: {projectId: string}) {
                 key={tab.label}
                 href={href}
                 className={[
-                  "border-b-2 pb-4 text-sm transition-colors whitespace-nowrap",
+                  "border-b-4 pb-4 pt-2 text-sm transition-colors whitespace-nowrap",
                   active
-                    ? "border-blue-500 font-semibold text-slate-900"
+                    ? "border-blue-500 font-semibold text-slate-950"
                     : "border-transparent font-medium text-slate-500 hover:text-blue-500",
                 ].join(" ")}>
                 {tab.label}

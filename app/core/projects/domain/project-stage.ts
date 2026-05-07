@@ -1,11 +1,38 @@
 import type {ProjectView} from "../dto";
+import {
+  ClipboardList,
+  ShoppingCart,
+  Factory,
+  Truck,
+  CircleCheck,
+} from "lucide-react";
 
 export const PROJECT_STAGES = [
-  {key: "PLANIFICACION", label: "Planificación"},
-  {key: "COMPRAS", label: "Compras"},
-  {key: "PRODUCCION", label: "Producción"},
-  {key: "ENTREGA", label: "Entrega"},
-  {key: "CIERRE", label: "Cierre"},
+  {
+    key: "PLANIFICACION",
+    label: "Planificación",
+    icon: ClipboardList,
+  },
+  {
+    key: "COMPRAS",
+    label: "Compras",
+    icon: ShoppingCart,
+  },
+  {
+    key: "PRODUCCION",
+    label: "Producción",
+    icon: Factory,
+  },
+  {
+    key: "ENTREGA",
+    label: "Entrega",
+    icon: Truck,
+  },
+  {
+    key: "CIERRE",
+    label: "Cierre",
+    icon: CircleCheck,
+  },
 ] as const;
 
 export type ProjectStageKey = (typeof PROJECT_STAGES)[number]["key"];

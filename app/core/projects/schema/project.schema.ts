@@ -21,6 +21,12 @@ export const ProjectUpdateSchema = ProjectBaseSchema;
 
 export type ProjectUpdateValues = z.infer<typeof ProjectUpdateSchema>;
 
+export const ProjectFormSchema = ProjectBaseSchema.extend({
+  quotationId: z.string().optional(),
+});
+
+export type ProjectFormValues = z.infer<typeof ProjectFormSchema>;
+
 export const ProjectCreateSchema = ProjectBaseSchema.extend({
   quotationId: z.string().min(1, "La cotización es requerida"),
 });

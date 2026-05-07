@@ -2,7 +2,7 @@
 
 import {create} from "zustand";
 import type {
-  ProjectCreateValues,
+  ProjectFormValues,
   ProjectUpdateValues,
 } from "@/app/core/projects/schema/project.schema";
 
@@ -15,11 +15,11 @@ type ProjectFormState = {
   quotationId: string | null;
   isSaving: boolean;
   error: string | null;
-  initialValues: Partial<ProjectCreateValues>;
+  initialValues: Partial<ProjectFormValues>;
 
   openCreate: (
     quotationId: string,
-    initialValues?: Partial<ProjectCreateValues>,
+    initialValues?: Partial<ProjectFormValues>,
   ) => void;
 
   openUpdate: (

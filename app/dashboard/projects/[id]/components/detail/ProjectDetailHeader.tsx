@@ -10,9 +10,11 @@ import {
   computeProjectStage,
 } from "@/app/core/projects/domain/project-stage";
 import ProjectStageTimeline from "./ProjectStageTimeline";
+import Button from "@/app/components/ui/Button";
 
 import ProjectHeaderMainInfo from "./ProjectHeaderMainInfo";
 import ProjectHeaderStatusRow from "./ProjectHeaderStatusRow";
+import ProjectExportReportButton from "./ProjectExportReportButton";
 
 function statusMeta(status: string) {
   switch (status) {
@@ -43,28 +45,38 @@ export default function ProjectDetailHeader({
   const title = project.clientSnapshot?.name || `Proyecto ${project.code}`;
 
   return (
-    <div className="mb-8 rounded-2xl bg-white p-4 shadow-sm">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-        <div className="mb-8 w-full">
-          <ProjectHeaderMainInfo
-            project={project}
-            title={title}
-            onEdit={() => projectForm.openUpdate(project.id, project)}
-          />
+    <div className="text-card-foreground flex flex-col gap-6 rounded-xl pb-6 shadow border-0 bg-white mb-8">
+      <div className="space-y-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between p-6 m-0">
+          <div>
+            <ProjectHeaderMainInfo project={project} title={title} />
+            <ProjectHeaderStatusRow
+              project={project}
+              status={st}
+              isAdmin={isAdmin}
+              onOpenProductionOrder={() => openByIdOp(project.id)}
+              onOpenProductionOrders={() => openProductionOrders(project.id)}
+            />
+          </div>
 
-          <ProjectHeaderStatusRow
-            project={project}
-            status={st}
-            isAdmin={isAdmin}
-            onOpenProductionOrder={() => openByIdOp(project.id)}
-            onOpenProductionOrders={() => openProductionOrders(project.id)}
-          />
+          <div className="flex gap-2 items-start">
+            <ProjectExportReportButton
+              projectId={project.id}
+              projectCode={project.code}
+            />
 
-          <ProjectStageTimeline
-            stages={PROJECT_STAGES}
-            currentStageKey={stageKey}
-          />
+            <Button
+              variant="primary"
+              onClick={() => projectForm.openUpdate(project.id, project)}>
+              Editar Proyecto
+            </Button>
+          </div>
         </div>
+
+        <ProjectStageTimeline
+          stages={PROJECT_STAGES}
+          currentStageKey={stageKey}
+        />
       </div>
     </div>
   );
