@@ -147,7 +147,7 @@ export default function QuotationTable({
     {
       key: "actions",
       header: "Acciones",
-      className: "text-right",
+      className: "text-center",
       render: (q) => (
         <div className="flex gap-2">
           <Button

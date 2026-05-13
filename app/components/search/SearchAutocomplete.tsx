@@ -168,7 +168,7 @@ export function SearchAutocomplete<T>({
             runSearch(term);
           }}
           placeholder={placeholder}
-          className={`w-full rounded-xl border bg-white px-3 py-2 text-sm text-[#0F172A] placeholder:text-slate-400 transition focus:outline-none ${
+          className={`w-full rounded-md border bg-white px-3 py-1.5 text-sm text-[#0F172A] placeholder:text-slate-400 transition focus:outline-none ${
             error
               ? "border-red-500 focus:ring-2 focus:ring-red-500/30"
               : "border-slate-300 focus:border-[#0A3D91] focus:ring-2 focus:ring-[#0A3D91]/30"

@@ -90,6 +90,7 @@ export function ProjectWarranty({project}: Props) {
       <ProjectWarrantyEvidenceSection
         projectId={project.id}
         projectCode={project.code}
+        cases={cases}
       />
 
       <WarrantyCaseFormDialog

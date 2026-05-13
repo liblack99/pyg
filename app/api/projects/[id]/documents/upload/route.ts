@@ -12,9 +12,37 @@ import {
 import {makeProjectActivityUseCases} from "@/app/core/projects/activity/usecases";
 import {projectActivityPrismaRepo} from "@/app/infra/repositories/project/activity/project-activity.prisma.repo";
 import {getProjectModuleByDocumentType} from "@/app/core/projects/documents/domain/document-type-module-map";
+import type {Prisma} from "@/app/generated/prisma/client";
 
 function isValidDocumentType(value: string): value is ProjectDocumentType {
   return (PROJECT_DOCUMENT_TYPES as readonly string[]).includes(value);
+}
+
+function parseUploadMetadata(value: FormDataEntryValue | null) {
+  if (typeof value !== "string" || !value.trim()) return null;
+
+  const parsed: unknown = JSON.parse(value);
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    throw new Error("metadata must be a JSON object");
+  }
+
+  const metadata: Record<string, string | number | boolean | null> = {};
+
+  for (const [key, item] of Object.entries(parsed)) {
+    if (
+      typeof item === "string" ||
+      typeof item === "number" ||
+      typeof item === "boolean" ||
+      item === null
+    ) {
+      metadata[key] = item;
+      continue;
+    }
+
+    throw new Error("metadata values must be primitive");
+  }
+
+  return metadata as Prisma.InputJsonValue;
 }
 
 export async function POST(req: Request, ctx: {params: Promise<{id: string}>}) {
@@ -35,6 +63,7 @@ export async function POST(req: Request, ctx: {params: Promise<{id: string}>}) {
     const title = formData.get("title");
     const description = formData.get("description");
     const projectCode = formData.get("projectCode");
+    const metadata = parseUploadMetadata(formData.get("metadata"));
 
     if (!(file instanceof File)) {
       return NextResponse.json({error: "file is required"}, {status: 400});
@@ -77,6 +106,7 @@ export async function POST(req: Request, ctx: {params: Promise<{id: string}>}) {
       mimeType: file.type || "application/octet-stream",
       fileSize: file.size,
       uploadedByUserId: me.id,
+      metadata,
     });
 
     const activity = makeProjectActivityUseCases(projectActivityPrismaRepo);
@@ -90,6 +120,7 @@ export async function POST(req: Request, ctx: {params: Promise<{id: string}>}) {
       metadata: {
         type: result.type,
         fileName: result.fileName,
+        documentMetadata: metadata,
       },
       createdById: me.id,
     });

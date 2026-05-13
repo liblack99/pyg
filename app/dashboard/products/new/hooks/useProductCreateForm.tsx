@@ -19,6 +19,7 @@ export function useProductCreateForm() {
     defaultValues: {
       name: "",
       code: "",
+      unit: "UNIDAD",
       unitPrice: 0,
       imageUrl: "",
       description: "",
@@ -32,6 +33,7 @@ export function useProductCreateForm() {
     const payload = {
       name: values.name,
       code: values.code,
+      unit: values.unit,
       unitPrice: values.unitPrice,
       imageUrl: values.imageUrl,
       description: values.description,

@@ -4,6 +4,7 @@ import type {DocumentRepoPort} from "../port/document-port";
 import {PROJECT_DOCUMENT_TYPE_LABELS} from "../constants/project-document-type-labels";
 import {getZohoProjectFolderPath} from "../utils/zoho-folder-path";
 import {logger} from "@/app/lib/logger";
+import type {Prisma} from "@/app/generated/prisma/client";
 
 type UploadProjectDocumentParams = {
   projectId: string;
@@ -17,6 +18,7 @@ type UploadProjectDocumentParams = {
   uploadedByUserId?: string | null;
   description?: string | null;
   isRequired?: boolean;
+  metadata?: Prisma.InputJsonValue | null;
 };
 
 export class UploadProjectDocumentUseCase {
@@ -101,7 +103,7 @@ export class UploadProjectDocumentUseCase {
       fileSize: params.fileSize,
 
       uploadedByUserId: params.uploadedByUserId ?? null,
-      metadata: null,
+      metadata: params.metadata ?? null,
     });
 
     return document;

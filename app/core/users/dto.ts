@@ -9,6 +9,8 @@ export type UserWithRole = {
   name: string;
   role: RoleRef;
   createdAt: Date;
+  isActive: boolean;
+  lastLoginAt: Date | null;
 };
 export type MeWithPerms = {
   id: string;
@@ -23,6 +25,8 @@ export type UserListItem = {
   name: string;
   role: RoleRef;
   createdAt: Date;
+  isActive: boolean;
+  lastLoginAt: Date | null;
 };
 
 export type DefaultsEditUserValues = {

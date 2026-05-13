@@ -9,7 +9,7 @@ type Props = {
 export default function TotalQuotation({Watch}: Props) {
   const watch = Watch;
   return (
-    <div className="rounded-2xl bg-linear-to-br from-blue-900 to-blue-700 p-6 shadow-xl">
+    <div className="rounded-md bg-linear-to-br from-blue-900 to-blue-700 p-6 shadow-xl">
       <h3 className="text-xl font-bold text-blue-100 mb-4">
         Totales de la cotización
       </h3>

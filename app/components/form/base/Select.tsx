@@ -26,7 +26,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     },
     ref,
   ) => {
-    const classes = `rounded-lg border bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/30
+    const classes = `rounded-md border bg-white px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/30
       ${
         error
           ? "border-red-500 focus:ring-2 focus:ring-red-500/30"

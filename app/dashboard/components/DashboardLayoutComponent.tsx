@@ -1,14 +1,11 @@
 "use client";
 
-import {ReactNode, useCallback, useEffect, useState} from "react";
+import {ReactNode, useCallback, useState} from "react";
 import AsideMenu from "../components/navigation/AsideMenu";
 import Header from "../components/navigation/Header";
 import {UniversalSearchClientModal} from "@/app/components/navigation/UniversalSearchClientModal";
 import {UniversalSearchQuotationModal} from "@/app/components/navigation/UniversalSearchQuotationModal";
 import {useUniversalSearch} from "@/app/dashboard/hooks/useUniversalSearch";
-import {useUserStore} from "./stores/useUserStore";
-import {apiGet} from "../lib/api.client";
-import type {Me} from "@/app/lib/auth.types";
 
 export default function DashboardLayout({children}: {children: ReactNode}) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -18,16 +15,6 @@ export default function DashboardLayout({children}: {children: ReactNode}) {
 
   const {isClientOpen, isQuotationOpen, selectedId, closeModal} =
     useUniversalSearch();
-
-  const setUser = useUserStore((state) => state.setUser);
-
-  useEffect(() => {
-    async function fetchUser() {
-      const me = await apiGet<Me>("/api/me");
-      setUser(me);
-    }
-    fetchUser();
-  }, [setUser]);
 
   return (
     <div className="flex h-screen overflow-hidden">

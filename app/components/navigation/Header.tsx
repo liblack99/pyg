@@ -1,10 +1,13 @@
 "use client";
 
-import React, {useMemo} from "react";
+import React, {useMemo, useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Button from "@/app/components/ui/Button";
 import {UniversalSearch} from "./UniversalSearch";
+import {LogOut} from "lucide-react";
+import {apiPost} from "@/app/lib/api.client";
+import {useUserStore} from "@/app/dashboard/stores/useUserStore";
 
 type ButtonVariant =
   | "primary"
@@ -61,7 +64,9 @@ function getDynamicRouteConfig(
     };
   }
 
-  const quotationDetailMatch = pathname.match(/^\/dashboard\/quotations\/([^/]+)$/);
+  const quotationDetailMatch = pathname.match(
+    /^\/dashboard\/quotations\/([^/]+)$/,
+  );
   if (quotationDetailMatch) {
     const quotationId = quotationDetailMatch[1];
     return {
@@ -141,7 +146,9 @@ function getDynamicRouteConfig(
     };
   }
 
-  const projectTabMatch = pathname.match(/^\/dashboard\/projects\/([^/]+)\/([^/]+)$/);
+  const projectTabMatch = pathname.match(
+    /^\/dashboard\/projects\/([^/]+)\/([^/]+)$/,
+  );
   if (projectTabMatch) {
     const projectId = projectTabMatch[1];
     const tab = projectTabMatch[2];
@@ -327,13 +334,38 @@ interface HeaderProps {
 }
 
 export default function Header({actions, onToggleSidebar}: HeaderProps) {
+  const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const {user} = useUserStore();
+
+  const userInitial = user?.name
+    ? user.name
+        .split(" ")
+        .filter(Boolean) // Limpia espacios extra si los hay
+        .map((n) => n[0].toUpperCase())
+        .join("")
+        .slice(0, 2) // Limita a 2 iniciales (ej: "AN")
+    : "JD";
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const config = useMemo(
     () => getRouteConfig(pathname, router),
     [pathname, router],
   );
+
+  async function handleLogout() {
+    if (isLoggingOut) return;
+
+    try {
+      setIsLoggingOut(true);
+      await apiPost("/api/auth/logout", {});
+      router.replace("/auth/login");
+      router.refresh();
+    } finally {
+      setIsLoggingOut(false);
+    }
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -364,16 +396,27 @@ export default function Header({actions, onToggleSidebar}: HeaderProps) {
         <div className="flex items-center gap-3">
           {actions}
 
-          <button
-            type="button"
+          <Button
+            onClick={() => setOpen(!open)}
+            variant="outline"
             className="flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 p-1 pr-3 text-sm transition-all hover:bg-neutral-100">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#023186] text-[10px] font-bold text-white">
-              JD
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white">
+              {userInitial}
             </div>
             <span className="hidden font-medium text-slate-700 md:inline">
-              Mi Cuenta
+              {user?.name}
             </span>
-          </button>
+          </Button>
+          {open && (
+            <div className="absolute top-14 right-4 rounded-md bg-white p-2 shadow-lg">
+              <Button
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                title="Cerrar sesión">
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </header>

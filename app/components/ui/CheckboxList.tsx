@@ -20,7 +20,7 @@ export function CheckboxList({
 }: CheckboxListProps) {
   return (
     <fieldset
-      className={`rounded-xl border p-4 space-y-3 ${
+      className={`rounded-xl space-y-3 ${
         errorMessage
           ? "border-red-300 bg-red-50"
           : "border-slate-200 bg-slate-50"

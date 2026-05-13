@@ -1,6 +1,6 @@
 // app/dashboard/quotations/[id]/hooks/useQuotationFormState.ts
 "use client";
-
+import {useState} from "react";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useForm, useFieldArray, useWatch} from "react-hook-form";
 import {useCallback, useEffect} from "react";
@@ -14,7 +14,6 @@ import {termsAndConditions} from "../constant/terms";
 import {computeTotal} from "@/app/utils/computeTotal";
 import type {UpdateQuotationDefaultValues} from "@/app/core/quotations/dto";
 import {Client} from "@/app/core/clients/dto";
-import {ar} from "zod/locales";
 
 const defaultTermsAccepted = termsAndConditions.map((term) => ({
   key: term.key,
@@ -93,7 +92,7 @@ export function useQuotationFormState(args?: UseQuotationFormStateArgs) {
     form.setValue("totalGeneral", Number(total.toFixed(2)), {
       shouldDirty: true,
     });
-  }, [items, form]);
+  }, [items, form, reference]);
 
   const terms = useWatch({control: form.control, name: "terms"});
 
@@ -130,7 +129,7 @@ export function useQuotationFormState(args?: UseQuotationFormStateArgs) {
       code: product.code,
       productName: product.name,
       description: product.description,
-      unit: "",
+      unit: product.unit,
       productId: product.id,
       quantity,
       unitPrice: product.unitPrice,
@@ -144,6 +143,13 @@ export function useQuotationFormState(args?: UseQuotationFormStateArgs) {
 
   const addProductAsItem = useCallback(
     (product: ProductListItem, quantity: number = 1) => {
+      const exists = itemsArray.fields.some(
+        (item) => item.productId === product.id,
+      );
+      if (exists) {
+        alert("El producto ya está en la lista");
+        return;
+      }
       itemsArray.append(convertProductToItem(product, quantity));
     },
     [itemsArray, convertProductToItem],

@@ -12,6 +12,7 @@ import {ProductListItem} from "@/app/core/products/dto";
 import {apiGet} from "@/app/lib/api.client";
 import {FieldErrors, UseFormWatch} from "react-hook-form";
 import type {QuotationFormData} from "../../../core/quotations/schemas/quotation.schema";
+import {QuotationItemRow} from "./QuotationItemRow";
 
 type Props = {
   addProductAsItem: (product: ProductListItem) => void;
@@ -67,7 +68,19 @@ export function ProductsAndServiceSection({
         />
       </div>
 
-      {items?.length > 0 && (
+      {items?.map((item, index) => (
+        <QuotationItemRow
+          key={item.code || index} // Usa index si el code no es único
+          reference={reference}
+          item={item}
+          presentationType={presentation as PresentationType}
+          onRemove={() => removeItem(index)}
+          onItemChange={(updatedItem) => updateItem(index, updatedItem)}
+          readOnly={false} // O la variable que controles para bloqueo
+        />
+      ))}
+
+      {/* {items?.length > 0 && (
         <div className="space-y-4">
           {items?.map((item, index) => (
             <QuotationItemCard
@@ -83,7 +96,7 @@ export function ProductsAndServiceSection({
             />
           ))}
         </div>
-      )}
+      )} */}
     </div>
   );
 }

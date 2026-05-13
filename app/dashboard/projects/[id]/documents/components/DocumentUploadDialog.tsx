@@ -4,6 +4,8 @@ import {useRef, useState} from "react";
 import {Paperclip, X} from "lucide-react";
 import type {ProjectDocumentType} from "@/app/core/projects/documents/dto";
 
+type UploadMetadata = Record<string, string | number | boolean | null>;
+
 type DocumentUploadDialogProps = {
   open: boolean;
   onClose: () => void;
@@ -13,6 +15,7 @@ type DocumentUploadDialogProps = {
   label: string;
   onUploaded: () => void;
   multiple?: boolean;
+  metadata?: UploadMetadata;
 };
 
 export function DocumentUploadDialog({
@@ -24,6 +27,7 @@ export function DocumentUploadDialog({
   label,
   onUploaded,
   multiple = false,
+  metadata,
 }: DocumentUploadDialogProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [files, setFiles] = useState<File[]>([]);
@@ -49,6 +53,9 @@ export function DocumentUploadDialog({
         formData.append("type", type);
         formData.append("title", file.name);
         formData.append("projectCode", projectCode);
+        if (metadata) {
+          formData.append("metadata", JSON.stringify(metadata));
+        }
 
         const res = await fetch(`/api/projects/${projectId}/documents/upload`, {
           method: "POST",

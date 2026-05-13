@@ -17,6 +17,8 @@ export type ProjectDocumentMultiTypeItem = {
   description?: string;
 };
 
+type UploadMetadata = Record<string, string | number | boolean | null>;
+
 type Props = {
   title: string;
   description?: string;
@@ -25,6 +27,7 @@ type Props = {
   projectId: string;
   projectCode: string;
   onRefresh: () => void | Promise<void>;
+  uploadMetadata?: UploadMetadata;
 };
 
 export function ProjectDocumentMultiTypeSection({
@@ -35,6 +38,7 @@ export function ProjectDocumentMultiTypeSection({
   projectId,
   projectCode,
   onRefresh,
+  uploadMetadata,
 }: Props) {
   const [activeItem, setActiveItem] = useState<ProjectDocumentMultiTypeItem | null>(
     null,
@@ -171,6 +175,7 @@ export function ProjectDocumentMultiTypeSection({
           type={activeItem.type}
           label={activeItem.label}
           multiple
+          metadata={uploadMetadata}
           onUploaded={() => {
             setActiveItem(null);
             onRefresh();

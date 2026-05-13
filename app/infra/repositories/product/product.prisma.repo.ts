@@ -31,6 +31,7 @@ export const productRepo: ProductRepoPort = {
         id: true,
         name: true,
         code: true,
+        unit: true,
         unitPrice: true,
         imageUrl: true,
         description: true,
@@ -59,6 +60,7 @@ export const productRepo: ProductRepoPort = {
         id: true,
         name: true,
         code: true,
+        unit: true,
         unitPrice: true,
         imageUrl: true,
         description: true,
@@ -77,6 +79,7 @@ export const productRepo: ProductRepoPort = {
       data: {
         name: data.name,
         code: data.code,
+        unit: data.unit ?? "UNIDAD",
         unitPrice: data.unitPrice,
         imageUrl: data.imageUrl ?? null,
         description: data.description ?? null,
@@ -97,6 +100,7 @@ export const productRepo: ProductRepoPort = {
       data: {
         ...(data.name !== undefined ? {name: data.name} : {}),
         ...(data.code !== undefined ? {code: data.code} : {}),
+        ...(data.unit !== undefined ? {unit: data.unit} : {}),
         ...(data.unitPrice !== undefined ? {unitPrice: data.unitPrice} : {}),
         ...(data.imageUrl !== undefined ? {imageUrl: data.imageUrl} : {}),
         ...(data.description !== undefined

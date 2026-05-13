@@ -23,7 +23,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ) => {
     const baseFieldClasses = `
       w-full
-      rounded-lg
+      rounded-md
       border
       px-3
       py-1.5

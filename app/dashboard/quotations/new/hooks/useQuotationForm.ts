@@ -14,7 +14,6 @@ export const LOCAL_KEY = "quotation_draft";
 export function useQuotationForm() {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
-
   const [draftEnabled, setDraftEnabled] = useState(true);
 
   const {
@@ -42,16 +41,11 @@ export function useQuotationForm() {
 
   const submit = form.handleSubmit(async (data) => {
     setServerError(null);
-
     setDraftEnabled(false);
-
     const payload = buildQuotationDraftPayload(data);
-
     try {
       const res = await createDraft(payload);
-
       clearLocalDraft(LOCAL_KEY);
-
       alert(`Cotización ${res.numberQuotation} creada correctamente`);
       router.push("/dashboard/quotations");
     } catch (e: unknown) {

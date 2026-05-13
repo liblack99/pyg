@@ -47,7 +47,17 @@ export default function ProductForm({
           error={errors.code}
         />
 
-        {/* Col 1 */}
+        <InputForm
+          label="Unidad de medida"
+          control={control}
+          name="unit"
+          type="text"
+          error={errors.unit}
+          placeholder="UNIDAD, M2, ML..."
+        />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
         <CurrencyInputForm
           label="Valor unitario "
           control={control}

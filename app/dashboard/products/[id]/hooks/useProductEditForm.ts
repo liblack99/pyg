@@ -23,6 +23,7 @@ export function useProductEditForm(
     defaultValues: {
       name: defaults.name,
       code: defaults.code,
+      unit: defaults.unit ?? "UNIDAD",
       unitPrice: defaults.unitPrice,
       imageUrl: defaults.imageUrl,
       description: defaults.description,
@@ -36,6 +37,7 @@ export function useProductEditForm(
     const payload = {
       name: values.name,
       code: values.code,
+      unit: values.unit,
       unitPrice: values.unitPrice,
       imageUrl: values.imageUrl,
       description: values.description,

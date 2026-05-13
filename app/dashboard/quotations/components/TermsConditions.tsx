@@ -57,7 +57,7 @@ export default function TermsConditions({
         />
       </div>
 
-      <div className=" border-slate-200 bg-slate-50 ">
+      <div className=" bg-slate-50 ">
         <CheckboxList
           items={terms}
           onChange={(key, checked) => updateTermAccepted(key, checked)}
