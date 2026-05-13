@@ -451,30 +451,68 @@ export const projectRepo: ProjectRepoPort = {
           string_contains: trimmedSearch,
         }
       : undefined;
+    const clientDocumentFilter: Prisma.JsonFilter | undefined = trimmedSearch
+      ? {
+          path: ["documentNumber"],
+          string_contains: trimmedSearch,
+        }
+      : undefined;
+
+    const searchFilters: Prisma.ProjectWhereInput[] = trimmedSearch
+      ? [
+          {code: {contains: trimmedSearch, mode: "insensitive"}},
+          {clientSnapshot: clientNameFilter},
+          {clientSnapshot: clientDocumentFilter},
+          {
+            quotation: {
+              is: {
+                numberQuotation: {
+                  contains: trimmedSearch,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            quotation: {
+              is: {
+                projectReference: {
+                  contains: trimmedSearch,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            quotation: {
+              is: {
+                client: {
+                  is: {
+                    documentNumber: {
+                      contains: trimmedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            quotation: {
+              is: {
+                clientSnapshot: clientDocumentFilter,
+              },
+            },
+          },
+        ]
+      : [];
 
     if (attention) {
       const rows = await prisma.project.findMany({
         where: {
           status: status ?? "ACTIVE",
           kind: kind ?? undefined,
-          ...(trimmedSearch
-            ? {
-                OR: [
-                  {code: {contains: trimmedSearch, mode: "insensitive"}},
-                  {clientSnapshot: clientNameFilter},
-                  {
-                    quotation: {
-                      is: {
-                        numberQuotation: {
-                          contains: trimmedSearch,
-                          mode: "insensitive",
-                        },
-                      },
-                    },
-                  },
-                ],
-              }
-            : {}),
+          ...(trimmedSearch ? {OR: searchFilters} : {}),
         },
         orderBy: [{createdAt: "desc"}, {id: "desc"}],
         select: {
@@ -530,30 +568,7 @@ export const projectRepo: ProjectRepoPort = {
       status: status ?? undefined,
       kind: kind ?? undefined,
       ...(trimmedSearch && {
-        OR: [
-          {code: {contains: trimmedSearch, mode: "insensitive"}},
-          {clientSnapshot: clientNameFilter},
-          {
-            quotation: {
-              is: {
-                numberQuotation: {
-                  contains: trimmedSearch,
-                  mode: "insensitive",
-                },
-              },
-            },
-          },
-          {
-            quotation: {
-              is: {
-                projectReference: {
-                  contains: trimmedSearch,
-                  mode: "insensitive",
-                },
-              },
-            },
-          },
-        ],
+        OR: searchFilters,
       }),
     };
 
