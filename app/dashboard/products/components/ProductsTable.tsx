@@ -106,7 +106,9 @@ export default function ProductsTable({
           <span className="text-sm font-bold text-slate-900">
             {moneyCOP(r.unitPrice)}
           </span>
-          <span className="text-sm text-slate-500 uppercase">P.V.P</span>
+          <span className="text-sm text-slate-500 uppercase">
+            P.V.P / {r.unit}
+          </span>
         </div>
       ),
     },

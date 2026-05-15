@@ -6,8 +6,11 @@ import {useRouter} from "next/navigation";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
-import {apiPost} from "@/app/lib/api.client";
-import type {ProductSchemaForm} from "../../../../core/products/schemas/product.schema";
+import {apiPut} from "@/app/lib/api.client";
+import type {
+  ProductSchemaForm,
+  ProductSchemaInput,
+} from "../../../../core/products/schemas/product.schema";
 import {ProductSchema} from "../../../../core/products/schemas/product.schema";
 import {UpdateProductInput} from "@/app/core/products/dto";
 
@@ -18,12 +21,12 @@ export function useProductEditForm(
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const form = useForm<ProductSchemaForm>({
+  const form = useForm<ProductSchemaInput, unknown, ProductSchemaForm>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
       name: defaults.name,
       code: defaults.code,
-      unit: defaults.unit ?? "UNIDAD",
+      unit: defaults.unit ?? "",
       unitPrice: defaults.unitPrice,
       imageUrl: defaults.imageUrl,
       description: defaults.description,
@@ -44,7 +47,7 @@ export function useProductEditForm(
     };
 
     try {
-      await apiPost(`/api/products/${productId}`, payload);
+      await apiPut(`/api/products/${productId}`, payload);
       router.push("/dashboard/products");
       router.refresh();
     } catch (e: unknown) {

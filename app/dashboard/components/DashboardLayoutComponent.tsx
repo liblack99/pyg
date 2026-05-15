@@ -1,8 +1,8 @@
 "use client";
 
 import {ReactNode, useCallback, useState} from "react";
-import AsideMenu from "../components/navigation/AsideMenu";
-import Header from "../components/navigation/Header";
+import AsideMenu from "@/app/components/navigation/AsideMenu";
+import Header from "@/app/components/navigation/Header";
 import {UniversalSearchClientModal} from "@/app/components/navigation/UniversalSearchClientModal";
 import {UniversalSearchQuotationModal} from "@/app/components/navigation/UniversalSearchQuotationModal";
 import {useUniversalSearch} from "@/app/dashboard/hooks/useUniversalSearch";

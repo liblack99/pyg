@@ -11,7 +11,11 @@ export const ProductSchema = z.object({
     .min(2, "El código debe tener al menos 2 caracteres")
     .max(40, "El código no puede superar los 40 caracteres"),
 
-  unit: z.string().min(1, "La unidad es obligatoria").optional(),
+  unit: z
+    .string()
+    .trim()
+    .min(1, "La unidad es obligatoria")
+    .max(30, "La unidad no puede superar los 30 caracteres"),
 
   unitPrice: z.number().min(100, "Precio es obligatorio"),
 
@@ -25,3 +29,4 @@ export const ProductSchema = z.object({
 });
 
 export type ProductSchemaForm = z.infer<typeof ProductSchema>;
+export type ProductSchemaInput = z.input<typeof ProductSchema>;

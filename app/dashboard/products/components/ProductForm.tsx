@@ -1,6 +1,9 @@
 import React from "react";
 import {UseFormReturn} from "react-hook-form";
-import {ProductSchemaForm} from "../../../core/products/schemas/product.schema";
+import {
+  ProductSchemaForm,
+  ProductSchemaInput,
+} from "../../../core/products/schemas/product.schema";
 import {InputForm} from "@/app/components/form/rhf/InputForm";
 import {InputFileForm} from "@/app/components/form/rhf/InputFileForm";
 import {TextareaForm} from "@/app/components/form/rhf/TextareaForm";
@@ -8,7 +11,7 @@ import Button from "@/app/components/ui/Button";
 import {CurrencyInputForm} from "@/app/components/form/rhf/CurrencyInputForm";
 
 type Props = {
-  form: UseFormReturn<ProductSchemaForm>;
+  form: UseFormReturn<ProductSchemaInput, unknown, ProductSchemaForm>;
   onSubmit: () => void;
   submitLabel: string;
   serverError?: string | null;
@@ -53,7 +56,7 @@ export default function ProductForm({
           name="unit"
           type="text"
           error={errors.unit}
-          placeholder="UNIDAD, M2, ML..."
+          placeholder="Ej: UNIDAD, M2, ML"
         />
       </div>
 

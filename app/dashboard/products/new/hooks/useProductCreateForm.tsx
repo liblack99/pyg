@@ -7,19 +7,22 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {apiPost} from "@/app/lib/api.client";
-import type {ProductSchemaForm} from "../../../../core/products/schemas/product.schema";
+import type {
+  ProductSchemaForm,
+  ProductSchemaInput,
+} from "../../../../core/products/schemas/product.schema";
 import {ProductSchema} from "../../../../core/products/schemas/product.schema";
 
 export function useProductCreateForm() {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const form = useForm<ProductSchemaForm>({
+  const form = useForm<ProductSchemaInput, unknown, ProductSchemaForm>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
       name: "",
       code: "",
-      unit: "UNIDAD",
+      unit: "",
       unitPrice: 0,
       imageUrl: "",
       description: "",
