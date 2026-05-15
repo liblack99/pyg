@@ -31,7 +31,7 @@ export default function ProductForm({
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       {/* GRID simétrica */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
         {/* Col 1 */}
         <InputForm
           label="Nombre del producto"
