@@ -1,7 +1,7 @@
 "use client";
 
 import {useCallback, useEffect, useMemo, useState} from "react";
-import {apiGet, apiPatch, apiPost, apiPut} from "@/app/lib/api.client";
+import {apiDelete, apiGet, apiPatch, apiPost, apiPut} from "@/app/lib/api.client";
 import type {
   CreateProjectWarrantyCaseInput,
   ProjectWarrantyCaseListResult,
@@ -39,6 +39,7 @@ export function useProjectWarranty(projectId: string) {
   const [error, setError] = useState<string | null>(null);
   const [savingCase, setSavingCase] = useState(false);
   const [savingSummary, setSavingSummary] = useState(false);
+  const [deletingCaseId, setDeletingCaseId] = useState<string | null>(null);
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [caseDialog, setCaseDialog] = useState<CaseDialogState>({
     open: false,
@@ -217,6 +218,30 @@ export function useProjectWarranty(projectId: string) {
     [caseDialog, projectId, recomputeSummaryFromCases, notifyChanged],
   );
 
+  const deleteCase = useCallback(
+    async (caseId: string) => {
+      try {
+        setDeletingCaseId(caseId);
+        setError(null);
+
+        await apiDelete(`/api/projects/${projectId}/warranties/${caseId}`);
+
+        setCases((prev) => {
+          const nextCases = prev.filter((item) => item.id !== caseId);
+          setSummary((current) => recomputeSummaryFromCases(nextCases, current));
+          return nextCases;
+        });
+        notifyChanged(projectId);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Error inesperado.");
+        throw err;
+      } finally {
+        setDeletingCaseId(null);
+      }
+    },
+    [projectId, recomputeSummaryFromCases, notifyChanged],
+  );
+
   return {
     cases: sortedCases,
     suppliers,
@@ -226,6 +251,7 @@ export function useProjectWarranty(projectId: string) {
     error,
     savingCase,
     savingSummary,
+    deletingCaseId,
     summaryOpen,
     caseDialog,
     setSummaryOpen,
@@ -234,6 +260,7 @@ export function useProjectWarranty(projectId: string) {
     closeCaseDialog,
     updateSummary,
     submitCase,
+    deleteCase,
     reload: loadAll,
   };
 }

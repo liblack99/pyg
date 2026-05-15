@@ -48,7 +48,7 @@ export const DASHBOARD_QUICK_ACTIONS: QuickActionItem[] = [
     key: "new-project",
     label: "ver proyectos",
     description: "Ver los proyectos",
-    href: "/dashboard/projects/new",
+    href: "/dashboard/projects",
     icon: FolderOpen,
     permission: "project:create",
     iconWrapperClass: "bg-[#6e69f31a] border-[#6e69f31a]",

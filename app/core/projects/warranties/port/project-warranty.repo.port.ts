@@ -32,5 +32,7 @@ export interface ProjectWarrantyRepoPort {
     input: UpdateProjectWarrantyCaseInput,
   ): Promise<ProjectWarrantyCaseView>;
 
+  deleteCase(caseId: string): Promise<ProjectWarrantyCaseView>;
+
   recalculateProjectWarrantyMetrics(projectId: string): Promise<void>;
 }

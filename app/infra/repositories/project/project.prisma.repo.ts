@@ -21,13 +21,29 @@ function formatProjectCode(year: number, n: number) {
   return `PR-${year}-${String(n).padStart(3, "0")}`;
 }
 
-function getProjectBudgetUsagePercent(project: {
+function getProjectBudgetRiskUsagePercent(project: {
   budgetTotal: Prisma.Decimal | number;
   spendingLimit65: Prisma.Decimal | number;
+  warrantyCostTotal: Prisma.Decimal | number;
+  financeEntries?: {
+    status: string;
+    type: string;
+    amount: Prisma.Decimal | number;
+  }[];
 }) {
   const limit = toNum(project.spendingLimit65);
   const budget = toNum(project.budgetTotal);
-  return limit > 0 ? (budget / limit) * 100 : 0;
+  const warrantyCost = toNum(project.warrantyCostTotal);
+  const extraCosts =
+    project.financeEntries
+      ?.filter(
+        (entry) =>
+          entry.status === "ACTIVE" &&
+          ["EXTRA_EXPENSE", "ADJUSTMENT_NEGATIVE"].includes(entry.type),
+      )
+      .reduce((sum, entry) => sum + toNum(entry.amount), 0) ?? 0;
+
+  return limit > 0 ? ((budget + warrantyCost + extraCosts) / limit) * 100 : 0;
 }
 
 function getProjectReceivedPurchasesTotal(project: {
@@ -69,6 +85,11 @@ function matchesAttentionFilter(
     deliveryDoneAt: Date | null;
     warrantyCostTotal: Prisma.Decimal | number;
     totalQuotationSinIVA: Prisma.Decimal | number;
+    financeEntries?: {
+      status: string;
+      type: string;
+      amount: Prisma.Decimal | number;
+    }[];
     budgetItems: {
       procurementStatus: string;
       totalCost: Prisma.Decimal | number | null;
@@ -91,7 +112,7 @@ function matchesAttentionFilter(
     now.getMonth(),
     now.getDate() + 7,
   );
-  const budgetPct = getProjectBudgetUsagePercent(project);
+  const budgetRiskPct = getProjectBudgetRiskUsagePercent(project);
   const marginPct = getProjectEstimatedMarginPercent(project);
   const hasPendingPurchases = project.budgetItems.some((item) =>
     ["PENDING", "ORDERED"].includes(item.procurementStatus),
@@ -99,7 +120,7 @@ function matchesAttentionFilter(
 
   switch (attention) {
     case "budget-risk":
-      return budgetPct >= 80;
+      return budgetRiskPct >= 80;
     case "delivery-soon":
       return Boolean(
         project.deliveryDueAt &&
@@ -545,6 +566,19 @@ export const projectRepo: ProjectRepoPort = {
               totalCost: true,
             },
           },
+          financeEntries: {
+            where: {
+              status: "ACTIVE",
+              type: {
+                in: ["EXTRA_EXPENSE", "ADJUSTMENT_NEGATIVE"],
+              },
+            },
+            select: {
+              status: true,
+              type: true,
+              amount: true,
+            },
+          },
         },
       });
 
@@ -553,13 +587,18 @@ export const projectRepo: ProjectRepoPort = {
         .slice(0, limit);
 
       return {
-        items: filteredRows.map((p) => ({
-          ...p,
-          totalQuotationSinIVA: toNum(p.totalQuotationSinIVA),
-          spendingLimit65: toNum(p.spendingLimit65),
-          budgetTotal: toNum(p.budgetTotal),
-          remaining: toNum(p.remaining),
-        })),
+        items: filteredRows.map((p) => {
+          const project = {...p};
+          delete (project as {financeEntries?: unknown}).financeEntries;
+
+          return {
+            ...project,
+            totalQuotationSinIVA: toNum(project.totalQuotationSinIVA),
+            spendingLimit65: toNum(project.spendingLimit65),
+            budgetTotal: toNum(project.budgetTotal),
+            remaining: toNum(project.remaining),
+          };
+        }),
         nextCursor: null,
       };
     }

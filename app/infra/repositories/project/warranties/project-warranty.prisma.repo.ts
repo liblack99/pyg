@@ -339,6 +339,15 @@ export const projectWarrantyPrismaRepo: ProjectWarrantyRepoPort = {
     return mapCase(item);
   },
 
+  async deleteCase(caseId) {
+    const item = await prisma.projectWarrantyCase.delete({
+      where: {id: caseId},
+      include: WARRANTY_CASE_INCLUDE,
+    });
+
+    return mapCase(item);
+  },
+
   async recalculateProjectWarrantyMetrics(projectId) {
     const [aggregate, openCount] = await prisma.$transaction([
       prisma.projectWarrantyCase.aggregate({

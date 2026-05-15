@@ -135,7 +135,7 @@ export function DashboardChartsSection({
             </h3>
           </div>
 
-          <div className="h-56">
+          <div className="h-66">
             {quotationStatusData.length === 0 ? (
               <p className="text-sm text-slate-500">
                 Sin datos de cotizaciones.

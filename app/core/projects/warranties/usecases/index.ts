@@ -5,6 +5,7 @@ import {UpdateProjectWarrantySummaryUseCase} from "./update-project-warranty-sum
 import {ListProjectWarrantyCasesUseCase} from "./list-project-warranty-cases.usecase";
 import {CreateProjectWarrantyCaseUseCase} from "./create-project-warranty-case.usecase";
 import {UpdateProjectWarrantyCaseUseCase} from "./update-project-warranty-case.usecase";
+import {DeleteProjectWarrantyCaseUseCase} from "./delete-project-warranty-case.usecase";
 
 export function makeProjectWarrantyUseCases(repo: ProjectWarrantyRepoPort) {
   return {
@@ -13,5 +14,6 @@ export function makeProjectWarrantyUseCases(repo: ProjectWarrantyRepoPort) {
     listProjectWarrantyCases: new ListProjectWarrantyCasesUseCase(repo),
     createProjectWarrantyCase: new CreateProjectWarrantyCaseUseCase(repo),
     updateProjectWarrantyCase: new UpdateProjectWarrantyCaseUseCase(repo),
+    deleteProjectWarrantyCase: new DeleteProjectWarrantyCaseUseCase(repo),
   };
 }

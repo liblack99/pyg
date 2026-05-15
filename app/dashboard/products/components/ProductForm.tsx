@@ -58,9 +58,6 @@ export default function ProductForm({
           error={errors.unit}
           placeholder="Ej: UNIDAD, M2, ML"
         />
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
         <CurrencyInputForm
           label="Valor unitario "
           control={control}
@@ -68,8 +65,6 @@ export default function ProductForm({
           error={errors.unitPrice}
         />
       </div>
-
-      {/* Col 2 */}
 
       {/* Full width */}
       <div className="md:col-span-3 flex flex-col gap-6">

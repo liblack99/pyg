@@ -1,6 +1,6 @@
 "use client";
 
-import {Pencil, Plus} from "lucide-react";
+import {Pencil, Plus, Trash2} from "lucide-react";
 import Button from "@/app/components/ui/Button";
 import type {ProjectWarrantyCaseView} from "@/app/core/projects/warranties/dto";
 import {
@@ -18,11 +18,32 @@ import {
 
 type Props = {
   cases: ProjectWarrantyCaseView[];
+  deletingCaseId: string | null;
   onCreate: () => void;
   onEdit: (item: ProjectWarrantyCaseView) => void;
+  onDelete: (caseId: string) => Promise<void>;
 };
 
-export function WarrantyCasesTable({cases, onCreate, onEdit}: Props) {
+export function WarrantyCasesTable({
+  cases,
+  deletingCaseId,
+  onCreate,
+  onEdit,
+  onDelete,
+}: Props) {
+  async function handleDelete(item: ProjectWarrantyCaseView) {
+    const ok = window.confirm(
+      `Deseas eliminar el caso de garantia "${item.title}"?`,
+    );
+    if (!ok) return;
+
+    try {
+      await onDelete(item.id);
+    } catch (error: unknown) {
+      alert(error instanceof Error ? error.message : "Error inesperado");
+    }
+  }
+
   return (
     <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="flex flex-col gap-3 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -122,12 +143,27 @@ export function WarrantyCasesTable({cases, onCreate, onEdit}: Props) {
                   </td>
 
                   <td className="px-5 py-4 text-right">
-                    <Button
-                      variant="icono"
-                      title="Editar"
-                      onClick={() => onEdit(item)}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="icono"
+                        title="Editar"
+                        onClick={() => onEdit(item)}
+                        disabled={deletingCaseId === item.id}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+
+                      <Button
+                        variant="icono"
+                        title="Eliminar"
+                        onClick={() => handleDelete(item)}
+                        disabled={deletingCaseId === item.id}>
+                        {deletingCaseId === item.id ? (
+                          <span className="text-xs">...</span>
+                        ) : (
+                          <Trash2 className="h-4 w-4 text-rose-600" />
+                        )}
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}

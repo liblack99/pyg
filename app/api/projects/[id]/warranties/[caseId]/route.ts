@@ -12,6 +12,8 @@ import {
   WARRANTY_CASE_STATUSES,
   WARRANTY_RESPONSIBILITIES,
 } from "@/app/core/projects/warranties/dto";
+import {makeProjectActivityUseCases} from "@/app/core/projects/activity/usecases";
+import {projectActivityPrismaRepo} from "@/app/infra/repositories/project/activity/project-activity.prisma.repo";
 
 const nullableDateField = z.coerce.date().nullable().optional();
 
@@ -83,6 +85,52 @@ export async function PATCH(
       method: "PATCH",
       params: await context.params.catch(() => undefined),
       step: "updateProjectWarrantyCase",
+      startedAt,
+    });
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  context: {params: Promise<{id: string; caseId: string}>},
+) {
+  const startedAt = Date.now();
+  const route = "/api/projects/[id]/warranties/[caseId]";
+  try {
+    const me = await requireAuth();
+    assertHasPermission(me.role.permissions, "project:update");
+
+    const {id: projectId, caseId} = await context.params;
+    const existing = await projectWarrantyPrismaRepo.getCaseById(caseId);
+
+    if (!existing) {
+      return NextResponse.json(
+        {message: "Caso de garantia no encontrado."},
+        {status: 404},
+      );
+    }
+
+    if (existing.projectId !== projectId) {
+      return NextResponse.json(
+        {message: "El caso no pertenece al proyecto indicado."},
+        {status: 400},
+      );
+    }
+
+    const deleted = await warrantyUseCases.deleteProjectWarrantyCase.execute(
+      caseId,
+    );
+
+    const activity = makeProjectActivityUseCases(projectActivityPrismaRepo);
+    await activity.syncProjectAlerts.execute(projectId);
+
+    return NextResponse.json(deleted);
+  } catch (error) {
+    return handleHttpError(error, {
+      route,
+      method: "DELETE",
+      params: await context.params.catch(() => undefined),
+      step: "deleteProjectWarrantyCase",
       startedAt,
     });
   }

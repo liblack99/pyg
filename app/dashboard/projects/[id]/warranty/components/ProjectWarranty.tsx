@@ -25,6 +25,7 @@ export function ProjectWarranty({project}: Props) {
     error,
     savingCase,
     savingSummary,
+    deletingCaseId,
     summaryOpen,
     caseDialog,
     setSummaryOpen,
@@ -33,6 +34,7 @@ export function ProjectWarranty({project}: Props) {
     closeCaseDialog,
     updateSummary,
     submitCase,
+    deleteCase,
   } = useProjectWarranty(project.id);
 
   if (loading) {
@@ -85,7 +87,13 @@ export function ProjectWarranty({project}: Props) {
         budgetTotal={project.budgetTotal}
       />
 
-      <WarrantyCasesTable cases={cases} onCreate={openCreate} onEdit={openEdit} />
+      <WarrantyCasesTable
+        cases={cases}
+        deletingCaseId={deletingCaseId}
+        onCreate={openCreate}
+        onEdit={openEdit}
+        onDelete={deleteCase}
+      />
 
       <ProjectWarrantyEvidenceSection
         projectId={project.id}

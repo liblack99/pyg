@@ -46,6 +46,11 @@ type ActiveProjectRecord = {
     totalCost: Prisma.Decimal;
     supplierId: string | null;
   }[];
+  financeEntries: {
+    status: string;
+    type: string;
+    amount: Prisma.Decimal;
+  }[];
 };
 
 function hasPermission(permissions: string[], permission: string) {
@@ -150,10 +155,19 @@ function getReceivedPurchasesCost(project: ActiveProjectRecord) {
     .reduce((sum, item) => sum + toNumber(item.totalCost), 0);
 }
 
-function getBudgetUsagePercent(project: ActiveProjectRecord) {
+function getBudgetRiskUsagePercent(project: ActiveProjectRecord) {
   const limit = toNumber(project.spendingLimit65);
   const budget = toNumber(project.budgetTotal);
-  return limit > 0 ? (budget / limit) * 100 : 0;
+  const warrantyCost = toNumber(project.warrantyCostTotal);
+  const extraCosts = project.financeEntries
+    .filter(
+      (entry) =>
+        entry.status === "ACTIVE" &&
+        ["EXTRA_EXPENSE", "ADJUSTMENT_NEGATIVE"].includes(entry.type),
+    )
+    .reduce((sum, entry) => sum + toNumber(entry.amount), 0);
+
+  return limit > 0 ? ((budget + warrantyCost + extraCosts) / limit) * 100 : 0;
 }
 
 function getEstimatedMarginPercent(project: ActiveProjectRecord) {
@@ -189,14 +203,14 @@ function buildProjectAttention(project: ActiveProjectRecord): {
   score: number;
   row: DashboardAttentionProject;
 } | null {
-  const budgetPct = getBudgetUsagePercent(project);
+  const budgetRiskPct = getBudgetRiskUsagePercent(project);
   const marginPct = getEstimatedMarginPercent(project);
   const pendingPurchases = getPendingPurchasesCount(project);
   const nextDate = getNextDateInfo(project);
   const baseHref = `/dashboard/projects/${project.id}`;
   const clientName = getClientName(project.clientSnapshot);
 
-  if (budgetPct >= 100) {
+  if (budgetRiskPct >= 100) {
     return {
       score: 100,
       row: {
@@ -276,7 +290,7 @@ function buildProjectAttention(project: ActiveProjectRecord): {
     };
   }
 
-  if (budgetPct >= 80) {
+  if (budgetRiskPct >= 80) {
     return {
       score: 78,
       row: {
@@ -491,6 +505,19 @@ export const dashboardRepo: DashboardRepoPort = {
                   supplierId: true,
                 },
               },
+              financeEntries: {
+                where: {
+                  status: "ACTIVE",
+                  type: {
+                    in: ["EXTRA_EXPENSE", "ADJUSTMENT_NEGATIVE"],
+                  },
+                },
+                select: {
+                  status: true,
+                  type: true,
+                  amount: true,
+                },
+              },
             },
           })
         : Promise.resolve([]),
@@ -591,7 +618,7 @@ export const dashboardRepo: DashboardRepoPort = {
       (project) => getPendingPurchasesCount(project) > 0,
     );
     const riskyProjects = activeProjectRows.filter((project) => {
-      const budgetPct = getBudgetUsagePercent(project);
+      const budgetPct = getBudgetRiskUsagePercent(project);
       const marginPct = getEstimatedMarginPercent(project);
       return (
         budgetPct >= 80 ||
@@ -672,7 +699,7 @@ export const dashboardRepo: DashboardRepoPort = {
         id: "budget-risk",
         title: "Cerca del limite del presupuesto",
         count: activeProjectRows.filter(
-          (project) => getBudgetUsagePercent(project) >= 80,
+          (project) => getBudgetRiskUsagePercent(project) >= 80,
         ).length,
         description: "Presupuesto consumido al 80% o mas del limite 65%.",
         tone: "danger" as const,
